@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace Whatsapp_Sifreli
 {
@@ -15,7 +17,7 @@ namespace Whatsapp_Sifreli
         {
             if (Pwd.Password == "123")
             {
-                DialogResult = true; 
+                DialogResult = true;
                 Close();
             }
             else
@@ -33,5 +35,8 @@ namespace Whatsapp_Sifreli
             DialogResult = false;
             Close();
         }
+
+        
+
     }
 }

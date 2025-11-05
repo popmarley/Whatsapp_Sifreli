@@ -1,0 +1,17 @@
+﻿Versiyon 1.0 (is Derlemesi 251106,0231)
+
+Yapılacaklar
+
+-Hakkında menüsü eklenecek.
+-login ekranı butonları eklenecek
+
+
+
+
+
+
+
+Yapılanlar
+
++ İlk sürüm oluşturuldu.(Versiyon 1.0 (is Derlemesi 251106,0231))
++ Sağdan soldan boyutlandırma eklendi (Versiyon 1.0 (is Derlemesi 251106,0235))

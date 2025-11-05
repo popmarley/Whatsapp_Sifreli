@@ -4,12 +4,11 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="WhatsApp Web"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
-        Width="1200" Height="800">
-
-
+       WindowStyle="None"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="CanResize"
+    Width="1200" Height="800">
 
     <Border Background="#101316" CornerRadius="14" Padding="8">
         <Grid>
@@ -30,10 +29,19 @@
                            Foreground="#EDEDED" FontSize="14" />
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
+                    <!-- Minimize -->
                     <Button Content="—" Width="40" Height="28" Margin="0,0,6,0"
                             Click="Minimize_Click"
                             Background="#222C34" Foreground="#EDEDED" BorderThickness="0"
                             Cursor="Hand"/>
+
+                    <!-- Maximize / Restore -->
+                    <Button x:Name="MaxRestoreButton" Content="🗖" Width="40" Height="28" Margin="0,0,6,0"
+                            Click="MaxRestore_Click"
+                            Background="#222C34" Foreground="#EDEDED" BorderThickness="0"
+                            Cursor="Hand"/>
+
+                    <!-- Close -->
                     <Button Content="✕" Width="40" Height="28"
                             Click="Close_Click"
                             Background="#C8464B" Foreground="White" BorderThickness="0"

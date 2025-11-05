@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.Web.WebView2.Core;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Web.WebView2.Core;
+using System.Windows.Interop;
 
 namespace Whatsapp_Sifreli
 {
@@ -20,7 +21,7 @@ namespace Whatsapp_Sifreli
         {
             try
             {
-                await InitWebViewAsync();              
+                await InitWebViewAsync();
             }
             catch (Exception ex)
             {
@@ -66,5 +67,103 @@ namespace Whatsapp_Sifreli
 
         private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
         private void Close_Click(object sender, RoutedEventArgs e) => Close();
+
+        // Bu alanları sınıf seviyesine ekle
+        private double _restoreTop, _restoreLeft, _restoreWidth, _restoreHeight;
+        private bool _isMaximized = false;
+
+        private void MaxRestore_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isMaximized)
+            {
+                // Mevcut boyut ve konumu kaydet
+                _restoreTop = Top;
+                _restoreLeft = Left;
+                _restoreWidth = Width;
+                _restoreHeight = Height;
+
+                // Görev çubuğunu kaplamadan büyüt
+                var workArea = SystemParameters.WorkArea;
+                Left = workArea.Left;
+                Top = workArea.Top;
+                Width = workArea.Width;
+                Height = workArea.Height;
+
+                _isMaximized = true;
+                MaxRestoreButton.Content = "🗗"; // restore ikonu
+            }
+            else
+            {
+                // Önceki boyut ve konuma dön
+                Left = _restoreLeft;
+                Top = _restoreTop;
+                Width = _restoreWidth;
+                Height = _restoreHeight;
+
+                _isMaximized = false;
+                MaxRestoreButton.Content = "🗖"; // maximize ikonu
+            }
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            var handle = new WindowInteropHelper(this).Handle;
+            HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
+        }
+
+        private const int HTLEFT = 10;
+        private const int HTRIGHT = 11;
+        private const int HTTOP = 12;
+        private const int HTTOPLEFT = 13;
+        private const int HTTOPRIGHT = 14;
+        private const int HTBOTTOM = 15;
+        private const int HTBOTTOMLEFT = 16;
+        private const int HTBOTTOMRIGHT = 17;
+        private const int HTCLIENT = 1;
+
+        private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_NCHITTEST = 0x0084;
+            const int RESIZE_HANDLE_SIZE = 8; // piksel hassasiyeti
+
+            if (msg == WM_NCHITTEST)
+            {
+                var mousePos = PointFromScreen(new Point(
+                    (short)((uint)lParam & 0xFFFF),
+                    (short)(((uint)lParam >> 16) & 0xFFFF)));
+
+                double width = ActualWidth;
+                double height = ActualHeight;
+
+                handled = true;
+
+                if (mousePos.Y <= RESIZE_HANDLE_SIZE)
+                {
+                    if (mousePos.X <= RESIZE_HANDLE_SIZE) return (IntPtr)HTTOPLEFT;
+                    if (mousePos.X >= width - RESIZE_HANDLE_SIZE) return (IntPtr)HTTOPRIGHT;
+                    return (IntPtr)HTTOP;
+                }
+                else if (mousePos.Y >= height - RESIZE_HANDLE_SIZE)
+                {
+                    if (mousePos.X <= RESIZE_HANDLE_SIZE) return (IntPtr)HTBOTTOMLEFT;
+                    if (mousePos.X >= width - RESIZE_HANDLE_SIZE) return (IntPtr)HTBOTTOMRIGHT;
+                    return (IntPtr)HTBOTTOM;
+                }
+                else if (mousePos.X <= RESIZE_HANDLE_SIZE)
+                {
+                    return (IntPtr)HTLEFT;
+                }
+                else if (mousePos.X >= width - RESIZE_HANDLE_SIZE)
+                {
+                    return (IntPtr)HTRIGHT;
+                }
+
+                handled = false;
+            }
+
+            return IntPtr.Zero;
+        }
+
     }
 }
